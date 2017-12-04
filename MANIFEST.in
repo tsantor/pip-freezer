@@ -9,7 +9,7 @@ recursive-exclude * *.py[co]
 
 recursive-include docs *.md mkdocs.yml
 
-# recursive-include pipfreezer/templates/*
+recursive-include pipfreezer/data/*
 
 # Examples:
 #include README.md

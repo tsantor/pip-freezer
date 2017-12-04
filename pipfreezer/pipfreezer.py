@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-
 import logging
 import subprocess
 import re
 import os
 
-
 from . import config
+
+# -----------------------------------------------------------------------------
 
 
 def exec_cmd(cmd):
@@ -16,7 +15,7 @@ def exec_cmd(cmd):
         return subprocess.check_output(cmd, stderr=subprocess.STDOUT,
                                        shell=True)
     except subprocess.CalledProcessError:
-        logger.error('Command failed: %s' % cmd)
+        logger.error('Command failed: %s', cmd)
 
 
 def get_list(config, section, option):
@@ -68,7 +67,7 @@ def run():
 
     try:
         cmd = '%s freeze >> %s' % (pip_path, freeze_file)
-        logger.debug(cmd)
+        # logger.debug(cmd)
         exec_cmd(cmd)
     except OSError as e:
         logger.error(str(e))
@@ -83,40 +82,54 @@ def run():
     local_list = []
     prod_list = []
     test_list = []
+    unknown_list = []
 
     with open(freeze_file) as fp:
         for cnt, line in enumerate(fp):
             line = line.rstrip('\n')
             # print('Line {}: {}'.format(cnt, line))
 
+            is_added = False
             regex = r'(.+)==(.+)'
             result = re.match(regex, line)
             if result:
                 # Place packages into their corresponding files
                 if result.groups()[0] in base_packages:
-                    # print('%s is a base package' % line)
+                    # logger.debug('%s is a base package' % line)
                     base_list.append(line)
+                    is_added = True
                 if result.groups()[0] in local_packages:
-                    # print('%s is a local package' % line)
+                    # logger.debug('%s is a local package' % line)
                     local_list.append(line)
+                    is_added = True
                 if result.groups()[0] in prod_packages:
-                    # print('%s is a production package' % line)
+                    # logger.debug('%s is a production package' % line)
                     prod_list.append(line)
+                    is_added = True
                 if result.groups()[0] in test_packages:
-                    # print('%s is a test package' % line)
+                    # logger.debug('%s is a test package' % line)
                     test_list.append(line)
+                    is_added = True
+
+                # We don't know where these go?
+                if not is_added:
+                    logger.debug('%s is a unknown package (probably a dependency of a top level package)' % line)
+                    unknown_list.append(line)
 
     if base_list:
-        list_to_file(base_list, 'requirements_test/base.txt')
+        list_to_file(base_list, 'requirements/base.txt')
 
     if local_list:
-        list_to_file(local_list, 'requirements_test/local.txt')
+        list_to_file(local_list, 'requirements/local.txt')
 
     if prod_list:
-        list_to_file(prod_list, 'requirements_test/production.txt')
+        list_to_file(prod_list, 'requirements/production.txt')
 
     if test_list:
-        list_to_file(test_list, 'requirements_test/test.txt')
+        list_to_file(test_list, 'requirements/test.txt')
+
+    if unknown_list:
+        list_to_file(unknown_list, 'requirements/unknown.txt')
 
     # Delete existing file
     if os.path.exists(freeze_file):

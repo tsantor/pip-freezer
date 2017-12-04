@@ -2,8 +2,32 @@ import argparse
 import logging
 import logging.handlers
 import os
+import shutil
 
 import six.moves.configparser as configparser
+
+# -----------------------------------------------------------------------------
+
+
+def get_data(path):
+    """Helper to return correct path to our non-python package data files."""
+    root = os.path.abspath(os.path.dirname(__file__))
+    return os.path.join(root, 'data', path)
+
+
+def copy_file(filename, dst):
+    """Copy data files from data folder."""
+    # Create dir if needed
+    dir_path = os.path.dirname(os.path.expanduser(dst))
+    if not os.path.isdir(dir_path):
+        os.makedirs(dir_path)
+
+    src = os.path.join(get_data(''), filename)
+    dst = os.path.expanduser(dir_path)
+    shutil.copy2(src, dst)
+
+if not os.path.exists(os.path.expanduser('~/.pipfreezer/pipfreezer.cfg')):
+    copy_file('pipfreezer.cfg', '~/.pipfreezer/pipfreezer.cfg')
 
 # -----------------------------------------------------------------------------
 
