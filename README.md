@@ -2,26 +2,30 @@
 Author:Tim Santor <tsantor@xstudios.agency>
 
 # Overview
-For the organized developer. Puts packages in their proper place (base.txt, local.txt, production.txt, test.txt). **Playes nice with [Django Cookiecutter](https://github.com/pydanny/cookiecutter-django).**
+For the organized developer. Puts packages in their proper place (base.txt, local.txt, production.txt, test.txt). **Plays nice with [Django Cookiecutter](https://github.com/pydanny/cookiecutter-django).**
 
 
 # Installation
-To install Pip Freezer, simply:
+To install Pip Freezer, simply use pip:
 
     pip install pipfreezer
 
 
 ## Usage
-In the root of your prject, run:
+### Freeze requirements
+In the root of your project, run:
 
 ```bash
 pipfreezer
 ```
 
-When installing requirments simply use:
+### Install requirements
+When installing requirements simply use:
 ```bash
 pip install -r requirements/local.txt
 ```
+
+> **NOTE:** Replace `local` with the environment you desire: `local`, `production` or `test`
 
 > **NOTE:** On first run, `pipfreezer` will create a config file at `~/.pipfreezer/pipfreezer.cfg`. This contains the rules for where pipfreezer will place known requirements.  Feel free to edit this to your liking.
 
