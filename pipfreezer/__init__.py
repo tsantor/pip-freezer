@@ -68,4 +68,4 @@ ch.setFormatter(formatter)
 
 # Add logging handlers
 logger.addHandler(fh)
-logger.addHandler(ch)
+# logger.addHandler(ch)
