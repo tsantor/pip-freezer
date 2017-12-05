@@ -8,8 +8,9 @@ For the organized developer. Puts packages in their proper place (base.txt, loca
 # Installation
 To install Pip Freezer, simply use pip:
 
-    pip install pipfreezer
-
+```bash
+pip install pipfreezer
+```
 
 ## Usage
 ### Freeze requirements
@@ -19,15 +20,17 @@ In the root of your project, run:
 pipfreezer
 ```
 
+> **NOTE:** On first run, `pipfreezer` will create a config file at `~/.pipfreezer/pipfreezer.cfg`. This contains the rules for where pipfreezer will place known requirements.  Feel free to edit this to your liking.
+
 ### Install requirements
 When installing requirements simply use:
+
 ```bash
 pip install -r requirements/local.txt
 ```
 
 > **NOTE:** Replace `local` with the environment you desire: `local`, `production` or `test`
 
-> **NOTE:** On first run, `pipfreezer` will create a config file at `~/.pipfreezer/pipfreezer.cfg`. This contains the rules for where pipfreezer will place known requirements.  Feel free to edit this to your liking.
 
 # Documentation
 Documentation is available at TODO

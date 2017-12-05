@@ -3,7 +3,7 @@ import subprocess
 import re
 import os
 
-from . import config
+from . import config, args
 
 # -----------------------------------------------------------------------------
 
@@ -46,6 +46,8 @@ def list_to_file(itemlist, filename):
             f.write('# Pro-tip: Try not to put anything here. Avoid dependencies in production that aren\'t in development.\n-r base.txt\n\n')
         if 'test' in fname:
             f.write('# Test dependencies go here.\n-r base.txt\n\n')
+        if 'unknown' in fname:
+            f.write('# Unknown dependencies go here. Probably dependencies of top level packages.\n-r base.txt\n\n')
         for item in itemlist:
             f.write('%s\n' % item)
 
@@ -128,7 +130,7 @@ def run():
     if test_list:
         list_to_file(test_list, 'requirements/test.txt')
 
-    if unknown_list:
+    if unknown_list and args.unknown:
         list_to_file(unknown_list, 'requirements/unknown.txt')
 
     # Delete existing file

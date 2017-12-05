@@ -37,6 +37,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--config', help='Config file path',
                     default='~/.pipfreezer/pipfreezer.cfg')
 # parser.add_argument('-p,', '--password', help='SFTP Password')
+parser.add_argument('-u', '--unknown', action='store_true', help='Output unknown dependencies to a file')
 args = parser.parse_args()
 
 # Read config
