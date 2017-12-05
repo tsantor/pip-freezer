@@ -133,9 +133,12 @@ def run():
     if unknown_list and args.unknown:
         list_to_file(unknown_list, 'requirements/unknown.txt')
 
-    # Delete existing file
+    # Delete freeze files
     if os.path.exists(freeze_file):
         os.remove(freeze_file)
+
+    if os.path.exists('requirements.txt'):
+        os.remove('requirements.txt')
 
 # -----------------------------------------------------------------------------
 
