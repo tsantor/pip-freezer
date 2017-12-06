@@ -7,16 +7,6 @@ from . import config, args
 # -----------------------------------------------------------------------------
 
 
-def exec_cmd(cmd):
-    """Executes a command and returns its output."""
-    logger = logging.getLogger(__name__)
-    try:
-        return subprocess.check_output(cmd, stderr=subprocess.STDOUT,
-                                       shell=True)
-    except subprocess.CalledProcessError:
-        logger.error('Command failed: %s', cmd)
-
-
 def get_list(config, section, option):
     """Get list from config with multi-line value."""
     value = config.get(section, option)
@@ -69,12 +59,6 @@ def run():
     """Main program."""
     logger = logging.getLogger(__name__)
 
-    # Determine pip path
-    if config.has_option('default', 'pip_path'):
-        pip_path = config.get('default', 'pip_path')
-    else:
-        pip_path = 'pip'
-
     # Get known packages
     base_packages = get_list(config, 'base', 'packages')
     local_packages = get_list(config, 'local', 'packages')
@@ -113,6 +97,7 @@ def run():
             logger.debug('%s is a unknown package (probably a dependency of a top level package)' % line[0])
             unknown_list.append(pack_ver)
 
+    # Create organized requirements files
     if base_list:
         list_to_file(base_list, 'requirements/base.txt')
 
