@@ -50,11 +50,6 @@ def list_to_file(itemlist, filename):
             f.write('%s\n' % item)
 
 
-def package_version(package_info):
-    """Reassemble package info."""
-    return '=='.join(package_info)
-
-
 def run():
     """Main program."""
     logger = logging.getLogger(__name__)
@@ -75,7 +70,7 @@ def run():
     package_list = get_package_list()
     for line in package_list:
         # print(line)
-        pack_ver = package_version(line)
+        pack_ver = '=='.join(line)
         is_added = False
 
         # Place packages into their corresponding files
