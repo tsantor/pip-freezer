@@ -1,6 +1,5 @@
 import logging
 import subprocess
-import re
 import os
 
 from . import config, args
@@ -21,7 +20,16 @@ def exec_cmd(cmd):
 def get_list(config, section, option):
     """Get list from config with multi-line value."""
     value = config.get(section, option)
-    return list(filter(None, (x.strip() for x in value.splitlines())))
+    return list(filter(None, (x.strip().lower() for x in value.splitlines())))
+
+
+def get_package_list():
+    """Return a normalized lower-cased list of packages and their versions."""
+    pip_freeze = subprocess.check_output(('pip', 'freeze')).decode('utf8')
+    package_list = [x.strip().split('==') for x in pip_freeze.split('\n') if x.find('==') != -1]
+    package_list = [(x[0].lower(), x[1]) for x in package_list]
+    # package_map = {x[0].lower(): x[1] for x in package_list}
+    return package_list
 
 
 def list_to_file(itemlist, filename):
@@ -52,6 +60,11 @@ def list_to_file(itemlist, filename):
             f.write('%s\n' % item)
 
 
+def package_version(package_info):
+    """Reassemble package info."""
+    return '=='.join(package_info)
+
+
 def run():
     """Main program."""
     logger = logging.getLogger(__name__)
@@ -62,19 +75,7 @@ def run():
     else:
         pip_path = 'pip'
 
-    # Delete freeze file
-    freeze_file = 'requirements_pipfreezer.txt'
-    if os.path.exists(freeze_file):
-        os.remove(freeze_file)
-
-    try:
-        cmd = '%s freeze >> %s' % (pip_path, freeze_file)
-        # logger.debug(cmd)
-        exec_cmd(cmd)
-    except OSError as e:
-        logger.error(str(e))
-
-    # Get base packages
+    # Get known packages
     base_packages = get_list(config, 'base', 'packages')
     local_packages = get_list(config, 'local', 'packages')
     prod_packages = get_list(config, 'production', 'packages')
@@ -86,37 +87,31 @@ def run():
     test_list = []
     unknown_list = []
 
-    with open(freeze_file) as fp:
-        for cnt, line in enumerate(fp):
-            line = line.rstrip('\n')
-            # print('Line {}: {}'.format(cnt, line))
+    # Get package list
+    package_list = get_package_list()
+    for line in package_list:
+        # print(line)
+        pack_ver = package_version(line)
+        is_added = False
 
-            is_added = False
-            regex = r'(.+)==(.+)'
-            result = re.match(regex, line)
-            if result:
-                # Place packages into their corresponding files
-                if result.groups()[0] in base_packages:
-                    # logger.debug('%s is a base package' % line)
-                    base_list.append(line)
-                    is_added = True
-                if result.groups()[0] in local_packages:
-                    # logger.debug('%s is a local package' % line)
-                    local_list.append(line)
-                    is_added = True
-                if result.groups()[0] in prod_packages:
-                    # logger.debug('%s is a production package' % line)
-                    prod_list.append(line)
-                    is_added = True
-                if result.groups()[0] in test_packages:
-                    # logger.debug('%s is a test package' % line)
-                    test_list.append(line)
-                    is_added = True
+        # Place packages into their corresponding files
+        if line[0] in base_packages:
+            base_list.append(pack_ver)
+            is_added = True
+        if line[0] in local_packages:
+            local_list.append(pack_ver)
+            is_added = True
+        if line[0] in prod_packages:
+            prod_list.append(pack_ver)
+            is_added = True
+        if line[0] in test_packages:
+            test_list.append(pack_ver)
+            is_added = True
 
-                # We don't know where these go?
-                if not is_added:
-                    logger.debug('%s is a unknown package (probably a dependency of a top level package)' % line)
-                    unknown_list.append(line)
+        # We don't know where these go?
+        if not is_added:
+            logger.debug('%s is a unknown package (probably a dependency of a top level package)' % line[0])
+            unknown_list.append(pack_ver)
 
     if base_list:
         list_to_file(base_list, 'requirements/base.txt')
@@ -133,10 +128,7 @@ def run():
     if unknown_list and args.unknown:
         list_to_file(unknown_list, 'requirements/unknown.txt')
 
-    # Delete freeze files
-    if os.path.exists(freeze_file):
-        os.remove(freeze_file)
-
+    # Remove requirements.txt
     if os.path.exists('requirements.txt'):
         os.remove('requirements.txt')
 

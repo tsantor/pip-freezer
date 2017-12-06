@@ -55,7 +55,7 @@ date_fmt = '%Y-%m-%d %I:%M:%S %p'
 formatter = logging.Formatter(msg_fmt, date_fmt)
 
 # Create file handler
-logfile = os.path.expanduser(config.get('default', 'log'))
+logfile = os.path.expanduser('~/.pipfreezer/pipfreezer.log')
 if not os.path.exists(os.path.dirname(logfile)):
     os.makedirs(os.path.dirname(logfile))
 fh = logging.handlers.RotatingFileHandler(logfile, maxBytes=10485760, backupCount=5)
