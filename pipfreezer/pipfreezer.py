@@ -44,8 +44,8 @@ def list_to_file(itemlist, filename):
             f.write('# Pro-tip: Try not to put anything here. Avoid dependencies in production that aren\'t in development.\n-r base.txt\n\n')
         if 'test' in fname:
             f.write('# Test dependencies go here.\n-r base.txt\n\n')
-        if 'unknown' in fname:
-            f.write('# Unknown dependencies go here. Probably dependencies of top level packages.\n-r base.txt\n\n')
+        if 'subdependencies' in fname:
+            f.write('# Sub-dependencies (i.e. dependencies of top level dependencies).\n-r base.txt\n\n')
         for item in itemlist:
             f.write('%s\n' % item)
 
@@ -64,7 +64,7 @@ def run():
     local_list = []
     prod_list = []
     test_list = []
-    unknown_list = []
+    sub_list = []
 
     # Get package list
     package_list = get_package_list()
@@ -89,8 +89,8 @@ def run():
 
         # We don't know where these go?
         if not is_added:
-            logger.debug('%s is a unknown package (probably a dependency of a top level package)' % line[0])
-            unknown_list.append(pack_ver)
+            logger.debug('%s is a unknown package (probably a sub-dependency of a top level package)' % line[0])
+            sub_list.append(pack_ver)
 
     # Create organized requirements files
     if base_list:
@@ -105,8 +105,8 @@ def run():
     if test_list:
         list_to_file(test_list, 'requirements/test.txt')
 
-    if unknown_list and args.unknown:
-        list_to_file(unknown_list, 'requirements/unknown.txt')
+    if sub_list and args.sub:
+        list_to_file(sub_list, 'requirements/subdependencies.txt')
 
     # Remove requirements.txt
     if os.path.exists('requirements.txt'):
