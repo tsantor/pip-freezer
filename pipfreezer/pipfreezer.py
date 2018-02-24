@@ -3,14 +3,16 @@ import subprocess
 import os
 
 from . import config, args
+from .organizers import organize_packages
+from .utils import get_list
 
 # -----------------------------------------------------------------------------
 
 
-def get_list(config, section, option):
-    """Get list from config with multi-line value."""
-    value = config.get(section, option)
-    return list(filter(None, (x.strip().lower() for x in value.splitlines())))
+# def get_list(config, section, option):
+#     """Get list from config with multi-line value."""
+#     value = config.get(section, option)
+#     return list(filter(None, (x.strip().lower() for x in value.splitlines())))
 
 
 def get_package_list():
@@ -33,7 +35,7 @@ def list_to_file(itemlist, filename):
     if os.path.exists(filename):
         os.remove(filename)
 
-    itemlist.sort()
+    # itemlist.sort()
 
     # Write new file
     with open(filename, 'w') as f:
@@ -92,9 +94,13 @@ def run():
             logger.debug('%s is a unknown package (probably a sub-dependency of a top level package)' % line[0])
             sub_list.append(pack_ver)
 
+
+    # TODO: Futher organize
+    drf_packages = organize_packages(config, 'djangorestframework', 'packages', base_list, "Django Rest Framework")
+
     # Create organized requirements files
     if base_list:
-        list_to_file(base_list, 'requirements/base.txt')
+        list_to_file(base_list + drf_packages, 'requirements/base.txt')
 
     if local_list:
         list_to_file(local_list, 'requirements/local.txt')
