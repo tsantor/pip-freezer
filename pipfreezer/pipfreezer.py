@@ -96,11 +96,15 @@ def run():
 
 
     # TODO: Futher organize
-    drf_packages = organize_packages(config, 'djangorestframework', 'packages', base_list, "Django Rest Framework")
+    drf_packages = get_list(config, 'base', 'djangorestframework')
+    drf_packages = organize_packages('Django Rest Framework', drf_packages, base_list)
+
+    djadmin_packages = get_list(config, 'base', 'djangoadmin')
+    djadmin_packages = organize_packages('Django Admin', djadmin_packages, base_list)
 
     # Create organized requirements files
     if base_list:
-        list_to_file(base_list + drf_packages, 'requirements/base.txt')
+        list_to_file(base_list + drf_packages + djadmin_packages, 'requirements/base.txt')
 
     if local_list:
         list_to_file(local_list, 'requirements/local.txt')
