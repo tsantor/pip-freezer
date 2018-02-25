@@ -4,16 +4,9 @@ import os
 
 from . import config, args
 from .organizers import organize_packages, organize
-from .utils import get_list, get_package_labels, get_packages
+from .utils import get_packages
 
 # -----------------------------------------------------------------------------
-
-
-# def get_list(config, section, option):
-#     """Get list from config with multi-line value."""
-#     value = config.get(section, option)
-#     return list(filter(None, (x.strip().lower() for x in value.splitlines())))
-
 
 def get_package_list():
     """Return a normalized lower-cased list of packages and their versions."""
