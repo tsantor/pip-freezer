@@ -39,7 +39,7 @@ def list_to_file(itemlist, filename):
         if 'test' in fname:
             f.write('# Test dependencies go here.\n-r base.txt\n\n')
         if 'subdependencies' in fname:
-            f.write('# Sub-dependencies (i.e. dependencies of top level dependencies).\n-r base.txt\n\n')
+            f.write('# Sub-dependencies (i.e. most likely dependencies of top level dependencies).\n-r base.txt\n\n')
         for item in itemlist:
             f.write('%s\n' % item)
 
