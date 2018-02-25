@@ -4,7 +4,7 @@ import os
 
 from . import config, args
 from .organizers import organize_packages, organize
-from .utils import get_list
+from .utils import get_list, get_package_labels, get_packages
 
 # -----------------------------------------------------------------------------
 
@@ -20,7 +20,6 @@ def get_package_list():
     pip_freeze = subprocess.check_output(('pip', 'freeze')).decode('utf8')
     package_list = [x.strip().split('==') for x in pip_freeze.split('\n') if x.find('==') != -1]
     package_list = [(x[0].lower(), x[1]) for x in package_list]
-    # package_map = {x[0].lower(): x[1] for x in package_list}
     return package_list
 
 
@@ -57,10 +56,7 @@ def run():
     logger = logging.getLogger(__name__)
 
     # Get known packages
-    base_packages = get_list(config, 'base', 'packages')
-    local_packages = get_list(config, 'local', 'packages')
-    prod_packages = get_list(config, 'production', 'packages')
-    test_packages = get_list(config, 'test', 'packages')
+    base_packages, local_packages, prod_packages, test_packages = get_packages(config)
 
     base_list = []
     local_list = []
@@ -95,9 +91,10 @@ def run():
             sub_list.append(pack_ver)
 
     # Further organize lists
-    organize('base', base_list)
-    organize('local', local_list)
-    organize('production', prod_list)
+    base_list = organize('base', base_list)
+    local_list = organize('local', local_list)
+    prod_list = organize('production', prod_list)
+    test_list = organize('test', test_list)
 
     # Create organized requirements files
     if base_list:

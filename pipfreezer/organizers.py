@@ -42,3 +42,5 @@ def organize(section, target_list):
             org_packages = organize_packages(packages, target_list)
             target_list += org_packages
             # print(key)
+
+    return target_list
