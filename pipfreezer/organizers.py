@@ -1,15 +1,17 @@
-
+from . import config
 from .utils import get_list
 
 
-def organize_packages(comment, known_packages, package_list):
+def organize_packages(known_packages, package_list):
     """Organize known packages."""
     packages = []
+    comment = known_packages.pop(0).title()
+    # print(comment)
     packages.append('\n# %s' % comment)
     to_remove = []
     # known_packages.reverse()
     # print('package_list:', package_list)
-    # print(known_packages)
+    # print('known_packages:', known_packages)
     for p in package_list:
         if any(kp in p for kp in known_packages):
             packages.append(p)
@@ -20,7 +22,7 @@ def organize_packages(comment, known_packages, package_list):
     for p in to_remove:
         # print(p)
         if p in package_list:
-            # print('Remove:', p)
+            #  print('Remove:', p)
             package_list.remove(p)
 
     packages.sort()
@@ -29,3 +31,14 @@ def organize_packages(comment, known_packages, package_list):
         # print(packages)
         return packages
     return []
+
+
+def organize(section, target_list):
+    """Get the items in a section and organize them."""
+    items = list(config.items(section))
+    for key, val in items:
+        if 'packages' not in key:
+            packages = get_list(config, section, key)
+            org_packages = organize_packages(packages, target_list)
+            target_list += org_packages
+            # print(key)

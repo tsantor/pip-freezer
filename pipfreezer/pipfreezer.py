@@ -3,7 +3,7 @@ import subprocess
 import os
 
 from . import config, args
-from .organizers import organize_packages
+from .organizers import organize_packages, organize
 from .utils import get_list
 
 # -----------------------------------------------------------------------------
@@ -94,17 +94,14 @@ def run():
             logger.debug('%s is a unknown package (probably a sub-dependency of a top level package)' % line[0])
             sub_list.append(pack_ver)
 
-
-    # TODO: Futher organize
-    drf_packages = get_list(config, 'base', 'djangorestframework')
-    drf_packages = organize_packages('Django Rest Framework', drf_packages, base_list)
-
-    djadmin_packages = get_list(config, 'base', 'djangoadmin')
-    djadmin_packages = organize_packages('Django Admin', djadmin_packages, base_list)
+    # Further organize lists
+    organize('base', base_list)
+    organize('local', local_list)
+    organize('production', prod_list)
 
     # Create organized requirements files
     if base_list:
-        list_to_file(base_list + drf_packages + djadmin_packages, 'requirements/base.txt')
+        list_to_file(base_list, 'requirements/base.txt')
 
     if local_list:
         list_to_file(local_list, 'requirements/local.txt')
