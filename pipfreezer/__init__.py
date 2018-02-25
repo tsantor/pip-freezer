@@ -4,7 +4,8 @@ import logging.handlers
 import os
 import shutil
 
-import six.moves.configparser as configparser
+import configparser
+#import six.moves.configparser as configparser
 
 # -----------------------------------------------------------------------------
 
