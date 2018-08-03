@@ -13,7 +13,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 with open(path.join(here, 'HISTORY.rst'), encoding='utf-8') as f:
     history = f.read()
 
-__version__='0.2.0'
+__version__='0.2.1'
 
 setup(
     name='pip-freezer',

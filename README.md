@@ -38,6 +38,8 @@ Documentation is available at TODO
 
 # Version History
 - **0.1.0** - Initial release
+- **0.2.0** - Various enhancements, better package organization in requirements files
+- **0.2.1** -
 
 
 # Issues

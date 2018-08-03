@@ -7,9 +7,9 @@ Overview
 ========
 
 For the organized developer. Puts packages in their proper place
-(base.txt, local.txt, production.txt, test.txt). **Plays nice with
-`Django
-Cookiecutter <https://github.com/pydanny/cookiecutter-django>`__.**
+(base.txt, local.txt, production.txt, test.txt). **Plays nice
+with**\ `Django
+Cookiecutter <https://github.com/pydanny/cookiecutter-django>`__\ **.**
 
 Installation
 ============
@@ -18,7 +18,7 @@ To install Pip Freezer, simply use pip:
 
 .. code:: bash
 
-    pip install pipfreezer
+   pip install pipfreezer
 
 Usage
 -----
@@ -30,14 +30,14 @@ In the root of your project, run:
 
 .. code:: bash
 
-    pipfreezer
+   pipfreezer
 
 ..
 
-    **NOTE:** On first run, ``pipfreezer`` will create a config file at
-    ``^/.pipfreezer/pipfreezer.cfg``. This contains the rules for where
-    pipfreezer will place known requirements. Feel free to edit this to
-    your liking.
+   **NOTE:** On first run, ``pipfreezer`` will create a config file at
+   ``^/.pipfreezer/pipfreezer.cfg``. This contains the rules for where
+   pipfreezer will place known requirements. Feel free to edit this to
+   your liking.
 
 Install requirements
 ^^^^^^^^^^^^^^^^^^^^
@@ -46,12 +46,12 @@ When installing requirements simply use:
 
 .. code:: bash
 
-    pip install -r requirements/local.txt
+   pip install -r requirements/local.txt
 
 ..
 
-    **NOTE:** Replace ``local`` with the environment you desire:
-    ``local``, ``production`` or ``test``
+   **NOTE:** Replace ``local`` with the environment you desire:
+   ``local``, ``production`` or ``test``
 
 Documentation
 =============
@@ -62,6 +62,9 @@ Version History
 ===============
 
 -  **0.1.0** - Initial release
+-  **0.2.0** - Various enhancements, better package organization in
+   requirements files
+-  **0.2.1** -
 
 Issues
 ======
