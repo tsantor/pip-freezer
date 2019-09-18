@@ -7,7 +7,7 @@ def organize_packages(key, known_packages, package_list):
     packages = []
     # comment = known_packages.pop(0).title()
     # print(comment)
-    packages.append('\n# %s' % item_to_label(key))
+    packages.append("\n# %s" % item_to_label(key))
     to_remove = []
     # known_packages.reverse()
     # print('package_list:', package_list)
@@ -37,7 +37,7 @@ def organize(section, target_list):
     """Get the items in a section and organize them."""
     items = list(config.items(section))
     for key, val in items:
-        if 'packages' not in key:
+        if "packages" not in key:
             packages = get_list(config, section, key)
             org_packages = organize_packages(key, packages, target_list)
             target_list += org_packages

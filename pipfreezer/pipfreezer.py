@@ -8,10 +8,13 @@ from .utils import get_packages
 
 # -----------------------------------------------------------------------------
 
+
 def get_package_list():
     """Return a normalized lower-cased list of packages and their versions."""
-    pip_freeze = subprocess.check_output(('pip', 'freeze')).decode('utf8')
-    package_list = [x.strip().split('==') for x in pip_freeze.split('\n') if x.find('==') != -1]
+    pip_freeze = subprocess.check_output(("pip", "freeze")).decode("utf8")
+    package_list = [
+        x.strip().split("==") for x in pip_freeze.split("\n") if x.find("==") != -1
+    ]
     package_list = [(x[0].lower(), x[1]) for x in package_list]
     return package_list
 
@@ -30,18 +33,22 @@ def list_to_file(itemlist, filename):
     # itemlist.sort()
 
     # Write new file
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         fname = os.path.basename(filename)
-        if 'local' in fname:
-            f.write('# Local development dependencies go here\n-r base.txt\n\n')
-        if 'production' in fname:
-            f.write('# Pro-tip: Try not to put anything here. Avoid dependencies in production that aren\'t in development.\n-r base.txt\n\n')
-        if 'test' in fname:
-            f.write('# Test dependencies go here.\n-r base.txt\n\n')
-        if 'subdependencies' in fname:
-            f.write('# Sub-dependencies (i.e. most likely dependencies of top level dependencies).\n-r base.txt\n\n')
+        if "local" in fname:
+            f.write("# Local development dependencies go here\n-r base.txt\n\n")
+        if "production" in fname:
+            f.write(
+                "# Pro-tip: Try not to put anything here. Avoid dependencies in production that aren't in development.\n-r base.txt\n\n"
+            )
+        if "test" in fname:
+            f.write("# Test dependencies go here.\n-r base.txt\n\n")
+        if "subdependencies" in fname:
+            f.write(
+                "# Sub-dependencies (i.e. most likely dependencies of top level dependencies).\n-r base.txt\n\n"
+            )
         for item in itemlist:
-            f.write('%s\n' % item)
+            f.write("%s\n" % item)
 
 
 def run():
@@ -61,7 +68,7 @@ def run():
     package_list = get_package_list()
     for line in package_list:
         # print(line)
-        pack_ver = '=='.join(line)
+        pack_ver = "==".join(line)
         is_added = False
 
         # Place packages into their corresponding files
@@ -80,34 +87,38 @@ def run():
 
         # We don't know where these go?
         if not is_added:
-            logger.debug('%s is a unknown package (probably a sub-dependency of a top level package)' % line[0])
+            logger.debug(
+                "%s is a unknown package (probably a sub-dependency of a top level package)"
+                % line[0]
+            )
             sub_list.append(pack_ver)
 
     # Further organize lists
-    base_list = organize('base', base_list)
-    local_list = organize('local', local_list)
-    prod_list = organize('production', prod_list)
-    test_list = organize('test', test_list)
+    base_list = organize("base", base_list)
+    local_list = organize("local", local_list)
+    prod_list = organize("production", prod_list)
+    test_list = organize("test", test_list)
 
     # Create organized requirements files
     if base_list:
-        list_to_file(base_list, 'requirements/base.txt')
+        list_to_file(base_list, "requirements/base.txt")
 
     if local_list:
-        list_to_file(local_list, 'requirements/local.txt')
+        list_to_file(local_list, "requirements/local.txt")
 
     if prod_list:
-        list_to_file(prod_list, 'requirements/production.txt')
+        list_to_file(prod_list, "requirements/production.txt")
 
     if test_list:
-        list_to_file(test_list, 'requirements/test.txt')
+        list_to_file(test_list, "requirements/test.txt")
 
     if sub_list and args.sub:
-        list_to_file(sub_list, 'requirements/subdependencies.txt')
+        list_to_file(sub_list, "requirements/subdependencies.txt")
 
     # Remove requirements.txt
-    if os.path.exists('requirements.txt'):
-        os.remove('requirements.txt')
+    if os.path.exists("requirements.txt"):
+        os.remove("requirements.txt")
+
 
 # -----------------------------------------------------------------------------
 

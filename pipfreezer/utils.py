@@ -6,9 +6,9 @@ def get_list(config, section, option):
 
 def item_to_label(key):
     """Take a section item and make a human readable label."""
-    parts = key.split('_')
+    parts = key.split("_")
     parts = [p.title() for p in parts]
-    return ' '.join(parts)
+    return " ".join(parts)
 
 
 def get_packages(config):
@@ -17,7 +17,9 @@ def get_packages(config):
     for section in config.sections():
         packages = []
         for key, val in config.items(section):
-            packages += list(filter(None, (x.strip().lower() for x in val.splitlines())))
+            packages += list(
+                filter(None, (x.strip().lower() for x in val.splitlines()))
+            )
         packages.sort()
         requirements.append(packages)
 
