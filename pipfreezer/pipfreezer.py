@@ -8,6 +8,7 @@ from .utils import get_packages
 
 # -----------------------------------------------------------------------------
 
+IGNORE_LIST = ["pkg-resources~=0.0.0"]
 
 def get_package_list():
     """Return a normalized lower-cased list of packages and their versions."""
@@ -48,6 +49,8 @@ def list_to_file(itemlist, filename):
                 "# Sub-dependencies (i.e. most likely dependencies of top level dependencies).\n-r base.txt\n\n"
             )
         for item in itemlist:
+            if item in IGNORE_LIST:
+                continue
             f.write("%s\n" % item)
 
 
@@ -68,7 +71,7 @@ def run():
     package_list = get_package_list()
     for line in package_list:
         # print(line)
-        pack_ver = "==".join(line)
+        pack_ver = "~=".join(line)
         is_added = False
 
         # Place packages into their corresponding files
