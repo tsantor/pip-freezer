@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from codecs import open
 from os import path
 
@@ -16,7 +14,7 @@ for f in files:
 
         # Convert markdown to reStructured
         with open(filepath, encoding="utf-8") as f:
-            content = pypandoc.convert(f.read(), "rst", format="markdown")
+            content = pypandoc.convert_text(f.read(), "rst", format="markdown")
 
         # Replace some RST underline chars that PyPI does not like
         # http://sphinx-doc.org/rest.html#sections

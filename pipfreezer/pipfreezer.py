@@ -1,14 +1,15 @@
 import logging
-import subprocess
 import os
+import subprocess
 
-from . import config, args
-from .organizers import organize_packages, organize
+from . import args, config
+from .organizers import organize, organize_packages
 from .utils import get_packages
 
 # -----------------------------------------------------------------------------
 
 IGNORE_LIST = ["pkg-resources~=0.0.0"]
+
 
 def get_package_list():
     """Return a normalized lower-cased list of packages and their versions."""
