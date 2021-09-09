@@ -91,14 +91,16 @@ def run():
                 continue
 
             package = PackageData(line)
-            version_mismatch = package.version != package_dict[package.name]
-            if package.name in package_dict and version_mismatch:
+            if (
+                package.name in package_dict
+                and package.version != package_dict[package.name]
+            ):
                 package.version = package_dict[package.name]
                 print(
                     f"Updated {package.name} from {package.version} to {package_dict[package.name]}"
                 )
                 replaced_content += package.freeze() + "\n"
-            save_requirements(file, replaced_content)
+                save_requirements(file, replaced_content)
 
 
 if __name__ == "__main__":
