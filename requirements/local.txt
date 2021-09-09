@@ -1,7 +1,0 @@
-# Local development dependencies go here
--r base.txt
-
-
-# Code Analysis
-black~=21.8b0
-pylint~=2.10.2

@@ -1,11 +1,10 @@
 import argparse
+import configparser
 import logging
 import logging.handlers
 import os
 import shutil
 
-
-import configparser
 # import six.moves.configparser as configparser
 
 __version__ = "0.2.1"
