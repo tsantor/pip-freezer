@@ -1,0 +1,6 @@
+
+# Http
+requests~=2.26.0
+
+# Terminal
+tqdm~=4.62.2

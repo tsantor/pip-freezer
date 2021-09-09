@@ -4,11 +4,11 @@ import logging.handlers
 import os
 import shutil
 
-try:
-    import configparser
-except:
-    import ConfigParser as configparser
+
+import configparser
 # import six.moves.configparser as configparser
+
+__version__ = "0.2.1"
 
 # -----------------------------------------------------------------------------
 
