@@ -1,19 +1,12 @@
+import glob
 import logging
 import subprocess
-import glob
-from collections import namedtuple
+
+# from functools import cache
 
 logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------------------------------
-
-Package = namedtuple("Package", ["name", "version"])
-
-
-def package_freeze(package_tuple):
-    if package_tuple.version != "latest":
-        return f"{package_tuple.name}=={package_tuple.version}"
-    return package_tuple.name
 
 
 class PackageData:
@@ -29,7 +22,6 @@ class PackageData:
             self.name = package.lower()
             self.version = "latest"
 
-    @property
     def freeze(self):
         if self.version != "latest":
             return f"{self.name}=={self.version}"
@@ -38,15 +30,25 @@ class PackageData:
     def __str__(self):
         return f"PackageData(name='{self.name}', version='{self.version}')"
 
+    def __repr__(self):
+        return self.__str__()
 
+
+# @cache
 def get_pip_list():
-    """Return a normalized lower-cased list of packages and their versions."""
+    """Return a list of PackageData classes."""
+    # print("subprocess")
     pip_freeze = subprocess.check_output(("pip", "freeze")).decode("utf8")
-    package_list = [
-        x.strip().split("==") for x in pip_freeze.split("\n") if x.find("==") != -1
-    ]
-    package_list = [Package(x[0].lower(), x[1]) for x in package_list]
-    return package_list
+    pip_freeze = pip_freeze.split("\n")
+    return [PackageData(x) for x in pip_freeze]
+
+
+def get_pip_dict():
+    """
+    Return pip list as a dictoionary with package as key name and value
+    as version.
+    """
+    return {p.name: p.version for p in get_pip_list()}
 
 
 def find_requirements_files():
@@ -56,47 +58,48 @@ def find_requirements_files():
 
 def open_requirements(file):
     """Return a clean list of requirements."""
-    return open(file).readlines()  # [x.strip() for x in open(file).readlines()]
+    with open(file) as fp:
+        return fp.readlines()
 
 
-def get_package_tuple(package):
-    """Return named of (name, version)."""
-    if package.find("==") != -1:
-        x = package.strip().split("==")
-        return Package(x[0].lower(), x[1])
-    return Package(package.lower().strip(), "latest")
+def save_requirements(file, lines):
+    "Save a list of requirements."
+    with open(file, "w") as fp:
+        fp.writelines(lines)
 
 
 def run():
     """Main program."""
     # Get pip list of installed packages
-    package_list = get_pip_list()
+    # package_list = get_pip_list()
     # print(package_list)
+    package_dict = get_pip_dict()
+    print(package_dict)
 
     # Get list of requirement files
     requirements_files = find_requirements_files()
 
-    # for file in requirements_files:
-    #     print('-' * 40)
-    #     print(file)
-    #     reqs = open_requirements(file)
-    #     for package in reqs:
-    #         print(get_package_tuple(package))
-
-    # for line in package_list:
-
-    # Look at each requirement and determine if it needs to be updated
+    # Look at each requirement file line by line and determine if a package
+    # needs to be updated
     for file in requirements_files:
         lines = open_requirements(file)
-        for l in lines:
-            if l.startswith("#"):
+        replaced_content = ""
+        for line in lines:
+            # simply re-add comments or empty lines
+            if line.startswith("#") or line.startswith("\n"):
+                replaced_content += line
                 continue
-            # old_package = get_package_tuple(l)
-            old_package = PackageData(l)
-            print(old_package.freeze)
 
+            package = PackageData(line)
+            version_mismatch = package.version != package_dict[package.name]
+            if package.name in package_dict and version_mismatch:
+                package.version = package_dict[package.name]
+                print(
+                    f"Updated {package.name} from {package.version} to {package_dict[package.name]}"
+                )
+                replaced_content += package.freeze() + "\n"
+            save_requirements(file, replaced_content)
 
-# -----------------------------------------------------------------------------
 
 if __name__ == "__main__":
     run()
