@@ -27,7 +27,7 @@ requirements = open("requirements.txt").readlines()
 setup(
     name="pip-freezer",
     version=version,
-    description="""Putting packages in their proper place (local.txt, production.txt, test.txt)""",
+    description="""For the organized, but lazy developer, meaning that you'll update a package, but you don't want to be bothered with updating the requirements file. Pip Freezer pins packages no matter which requirements file they live in and maintains your comments and line breaks.""",
     long_description=readme + "\n\n" + history,
     long_description_content_type="text/markdown",
     author="Tim Santor",
