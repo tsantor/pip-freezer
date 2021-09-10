@@ -105,6 +105,7 @@ def update_requirements_file(file, package_dict):
             continue
 
         package = PackageData(line)
+        print(package)
         if package.name in package_dict:
             if package.version != package_dict[package.name]:
                 updated.append(f"{package.name} {package.version} => {package_dict[package.name]}")
@@ -120,6 +121,7 @@ def update_requirements_file(file, package_dict):
 def run():
     """Main program."""
     package_dict = get_pip_dict()
+    print(package_dict)
     requirements_files = find_requirements_files()
 
     updated = []
