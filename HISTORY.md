@@ -10,3 +10,6 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 0.3.0 (2021-09-10)
 * Major re-release.  This package behaves **NOTHING** like the previous.
+
+## 0.3.1 (2021-09-10)
+* Too hasty. Remove some print statements.
