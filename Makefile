@@ -14,6 +14,9 @@ clean:
 	find . -name '*.pyc' -exec rm -f {} \;
 	find . -name '*.pyo' -exec rm -f {} \;
 
+destroy_env:
+	pyenv uninstall ${venv}
+
 build:
 	python setup.py sdist bdist_wheel
 

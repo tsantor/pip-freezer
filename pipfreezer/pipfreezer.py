@@ -20,14 +20,14 @@ class PackageData:
         package = package.strip()
         matches = re.search(r"[==|~=|>=|<=]{2}", package, re.IGNORECASE)
         if matches:
-            x = package.split(matches[0])
-            self.name = x[0].lower()
+            pack_ver = package.split(matches[0])
+            self.name = pack_ver[0].lower()
             # Get version and comment if any
-            ver_com = [y.strip() for y in x[1].split("#")]
+            ver_com = [x.strip() for x in pack_ver[1].split("#")]
             self.version = ver_com.pop(0)
             self.comment = "  # ".join(ver_com) if ver_com else None
         else:
-            pack_com = [y.strip() for y in package.split("#")]
+            pack_com = [x.strip() for x in package.split("#")]
             self.name = pack_com.pop(0).lower()
             self.version = None
             self.comment = "  # ".join(pack_com) if pack_com else None
@@ -94,6 +94,7 @@ def update_requirements_file(file, package_dict):
     """Open and update the requirements file."""
     lines = open_requirements(file)
     replaced_content = ""
+    updated = []
     not_installed = []
 
     # Go line by line and determine if a package needs to be updated
@@ -106,32 +107,39 @@ def update_requirements_file(file, package_dict):
         package = PackageData(line)
         if package.name in package_dict:
             if package.version != package_dict[package.name]:
-                print(
-                    Fore.GREEN
-                    + f"Update {package.name} {package.version} => {package_dict[package.name]}"
-                    + Fore.RESET
-                )
+                updated.append(f"{package.name} {package.version} => {package_dict[package.name]}")
                 package.version = package_dict[package.name]
             replaced_content += package.freeze() + "\n"
         else:
-            # logger.warning(f"{package.name} is not installed")
             replaced_content += line
             not_installed.append(package.name)
         save_requirements(file, replaced_content)
-    return not_installed
+    return updated, not_installed
 
 
 def run():
     """Main program."""
     package_dict = get_pip_dict()
     requirements_files = find_requirements_files()
+
+    updated = []
     not_installed = []
     for file in requirements_files:
-        not_installed += update_requirements_file(file, package_dict)
+        list1, list2 = update_requirements_file(file, package_dict)
+        updated += list1
+        not_installed += list2
+
+    if updated:
+        print(
+            Fore.GREEN
+            + "\nThe following packages have updated pinned versions:"
+            + Fore.RESET
+        )
+        [print(Style.DIM + x + Style.RESET_ALL) for x in updated]
 
     if not_installed:
         print(
-            Fore.RED
+            Fore.YELLOW
             + "\nThe following packages are referenced in requirements, but are not installed:"
             + Fore.RESET
         )
