@@ -1,11 +1,22 @@
 # Pip Freezer
-Author:Tim Santor <tsantor@xstudios.agency>
+Author:Tim Santor <tsantor@xstudios.com>
 
-# Overview
-For the organized developer. Puts packages in their proper place (base.txt, local.txt, production.txt, test.txt). **Plays nice with [Django Cookiecutter](https://github.com/pydanny/cookiecutter-django).**
+## Overview
+For the organized, but lazy developer, meaning that you'll update a package, but you don't want to be bothered with updating the requirements file. Pip Freezer pins packages no matter which requirements file they live in and maintains your comments and line breaks.
+
+> NOTE: Plays nice with [Django Cookiecutter](https://github.com/pydanny/cookiecutter-django).
 
 
-# Installation
+## Background
+We all have our preferences with how we manage package dependencies. There is the awesome [Poetry](https://python-poetry.org/), but there are still those of us who like to manually manage requirements with comments in various files such as `requirements.txt`, `requirements_dev.txt`. `requirements_test.txt`, or even `requirements/base.txt`, `requirements/local.txt` and `requirements/production.txt` or other similar variations.
+
+Simply running `pip freeze > requirements.txt` is not of much use if you like to be organized and only pin what you've manually defined as a "top-level" dependency (and not its sub-dependencies).
+
+Running `pipfreezer` will only pin packages defined in your requirements files.
+
+> NOTE: `pipfreezer` does not do any upating of packages itself, you can use `pip install -U package-name` or something like [pip-review](https://pypi.org/project/pip-review/). You would manually update packages and then run `pipfreezer` to auto-update those in your requirements files.
+
+## Installation
 To install Pip Freezer, simply use pip:
 
 ```bash
@@ -13,34 +24,13 @@ pip install pipfreezer
 ```
 
 ## Usage
-### Freeze requirements
 In the root of your project, run:
 
 ```bash
 pipfreezer
 ```
 
-> **NOTE:** On first run, `pipfreezer` will create a config file at `~/.pipfreezer/pipfreezer.cfg`. This contains the rules for where pipfreezer will place known requirements.  Feel free to edit this to your liking.
-
-### Install requirements
-When installing requirements simply use:
-
-```bash
-pip install -r requirements/local.txt
-```
-
-> **NOTE:** Replace `local` with the environment you desire: `local`, `production` or `test`
-
-
-# Documentation
-Documentation is available at TODO
-
-
-# Version History
-- **0.1.0** - Initial release
-- **0.2.0** - Various enhancements, better package organization in requirements files
-- **0.2.1** -
-
+> NOTE: `pipfreezer` will **not** add or pin packages that you **have not already defined** in one of your requirements files. **This is intentional**.
 
 # Issues
 If you experience any issues, please create an [issue](https://bitbucket.org/tsantor/pip-freezer/issues) on Bitbucket.

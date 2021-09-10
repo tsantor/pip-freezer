@@ -5,4 +5,4 @@ include README.md
 
 recursive-include docs *.md mkdocs.yml
 
-recursive-include pipfreezer/data/*
+# recursive-include pipfreezer/data/*
