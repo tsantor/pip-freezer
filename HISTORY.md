@@ -16,3 +16,6 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 0.3.2 (2021-09-13)
 * Add experimental `pipfreezer-upgrade` command which only upgrades packages listed in requirements files.
+
+## 0.3.3 (2021-09-13)
+* Fixed encountering `-r` in `pipfreezer-upgrade`

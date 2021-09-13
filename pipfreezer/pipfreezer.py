@@ -153,7 +153,7 @@ def upgrade():
     for file in requirements_files:
         lines = open_requirements(file)
         for line in lines:
-            if line.startswith("#") or line.startswith("\n"):
+            if line.startswith("#") or line.startswith("\n") or line.startswith("-r"):
                 continue
             package = PackageData(line)
             installed_reqs.append(package.name)
