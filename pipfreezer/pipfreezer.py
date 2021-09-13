@@ -2,6 +2,7 @@ import glob
 import json
 import logging
 import re
+import shlex
 import subprocess
 
 from colorama import Fore, Style, init
@@ -37,7 +38,7 @@ class PackageData:
             if not self.comment:
                 return f"{self.name}=={self.version}"
             else:
-                return f"{self.name}=={self.version} # {self.comment}"
+                return f"{self.name}=={self.version}  # {self.comment}"
         return self.name
 
     def __str__(self):
@@ -143,6 +144,23 @@ def run():
             + Fore.RESET
         )
         [print(Style.DIM + x + Style.RESET_ALL) for x in not_installed]
+
+
+def upgrade():
+    """Upgrade packages listed in requirements files."""
+    requirements_files = find_requirements_files()
+    installed_reqs = []
+    for file in requirements_files:
+        lines = open_requirements(file)
+        for line in lines:
+            if line.startswith("#") or line.startswith("\n"):
+                continue
+            package = PackageData(line)
+            installed_reqs.append(package.name)
+    installed_reqs = " ".join(installed_reqs)
+    cmd = shlex.split(f"pip install -U {installed_reqs}")
+    # print(cmd)
+    print(subprocess.check_output(cmd).decode("utf8"))
 
 
 if __name__ == "__main__":

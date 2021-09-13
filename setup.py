@@ -53,5 +53,10 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
-    entry_points={"console_scripts": ["pipfreezer = pipfreezer.pipfreezer:run"]},
+    entry_points={
+        "console_scripts": [
+            "pipfreezer = pipfreezer.pipfreezer:run",
+            "pipfreezer-upgrade = pipfreezer.pipfreezer:upgrade",
+        ]
+    },
 )
