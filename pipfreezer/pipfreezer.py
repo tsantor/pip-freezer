@@ -100,7 +100,7 @@ def update_requirements_file(file, package_dict):
     # Go line by line and determine if a package needs to be updated
     for line in lines:
         # Simply re-add comments or empty lines
-        if line.startswith("#") or line.startswith("\n"):
+        if bool(line.startswith(("#", "\n", "-r"))):
             replaced_content += line
             continue
 
@@ -147,13 +147,16 @@ def run():
 
 
 def upgrade():
-    """Upgrade packages listed in requirements files."""
+    """
+    Upgrade packages listed in requirements files.
+    EXPERIMENTAL. Do not use in production.
+    """
     requirements_files = find_requirements_files()
     installed_reqs = []
     for file in requirements_files:
         lines = open_requirements(file)
         for line in lines:
-            if line.startswith("#") or line.startswith("\n") or line.startswith("-r"):
+            if bool(line.startswith(("#", "\n", "-r"))):
                 continue
             package = PackageData(line)
             installed_reqs.append(package.name)
