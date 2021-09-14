@@ -59,9 +59,9 @@ class PackageData:
 
 def get_pip_list():
     """Return a list of PackageData classes."""
-    pip_freeze = subprocess.check_output(("pip", "freeze")).decode("utf8")
-    pip_freeze = pip_freeze.split("\n")
-    return [PackageData(x) for x in pip_freeze]
+    data = subprocess.check_output(["pip", "list", "--format", "json"])
+    parsed_results = json.loads(data)
+    return [PackageData(f"{x['name']}=={x['version']}") for x in parsed_results]
 
 
 def get_pip_dict():
