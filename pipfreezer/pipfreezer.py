@@ -147,23 +147,15 @@ def run():
 
 
 def upgrade():
-    """
-    Upgrade packages listed in requirements files.
-    EXPERIMENTAL. Do not use in production.
-    """
-    requirements_files = find_requirements_files()
-    installed_reqs = []
-    for file in requirements_files:
-        lines = open_requirements(file)
-        for line in lines:
-            if bool(line.startswith(("#", "\n", "-r"))):
-                continue
-            package = PackageData(line)
-            installed_reqs.append(package.name)
-    installed_reqs = " ".join(installed_reqs)
-    cmd = shlex.split(f"pip install -U {installed_reqs}")
-    # print(cmd)
-    print(subprocess.check_output(cmd).decode("utf8"))
+    """Upgrade outdated packages."""
+    data = subprocess.check_output(["pip", "list", "--outdated", "--format", "json"])
+    parsed_results = json.loads(data)
+    to_install = [f"{x['name']}=={x['latest_version']}" for x in parsed_results]
+    to_install = " ".join(to_install)
+    if to_install:
+        cmd = shlex.split(f"pip install -U {to_install}")
+        # print(cmd)
+        subprocess.check_output(cmd)
 
 
 if __name__ == "__main__":
