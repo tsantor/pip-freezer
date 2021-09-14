@@ -151,11 +151,9 @@ def upgrade():
     data = subprocess.check_output(["pip", "list", "--outdated", "--format", "json"])
     parsed_results = json.loads(data)
     to_install = [f"{x['name']}=={x['latest_version']}" for x in parsed_results]
-    to_install = " ".join(to_install)
-    if to_install:
-        cmd = shlex.split(f"pip install -U {to_install}")
-        # print(cmd)
-        subprocess.check_output(cmd)
+    for x in to_install:
+        cmd = shlex.split(f"pip install {x}")
+        print(subprocess.check_output(cmd).decode('utf-8'))
 
 
 if __name__ == "__main__":
