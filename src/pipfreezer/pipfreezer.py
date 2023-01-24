@@ -19,8 +19,7 @@ class PackageData:
 
     def __init__(self, package):
         package = package.strip()
-        matches = re.search(r"[==|~=|>=|<=]{2}", package, re.IGNORECASE)
-        if matches:
+        if matches := re.search(r"[==|~=|>=|<=]{2}", package, re.IGNORECASE):
             pack_ver = package.split(matches[0])
             self.name = pack_ver[0].lower()
             # Get version and comment if any
@@ -35,10 +34,11 @@ class PackageData:
 
     def freeze(self):
         if self.version:
-            if not self.comment:
-                return f"{self.name}=={self.version}"
-            else:
-                return f"{self.name}=={self.version}  # {self.comment}"
+            return (
+                f"{self.name}=={self.version}  # {self.comment}"
+                if self.comment
+                else f"{self.name}=={self.version}"
+            )
         return self.name
 
     def __str__(self):
@@ -107,7 +107,9 @@ def update_requirements_file(file, package_dict):
         package = PackageData(line)
         if package.name in package_dict:
             if package.version != package_dict[package.name]:
-                updated.append(f"{package.name} {package.version} => {package_dict[package.name]}")
+                updated.append(
+                    f"{package.name} {package.version} => {package_dict[package.name]}"
+                )
                 package.version = package_dict[package.name]
             replaced_content += package.freeze() + "\n"
         else:
@@ -153,7 +155,7 @@ def upgrade():
     to_install = [f"{x['name']}=={x['latest_version']}" for x in parsed_results]
     for x in to_install:
         cmd = shlex.split(f"pip install {x}")
-        print(subprocess.check_output(cmd).decode('utf-8'))
+        print(subprocess.check_output(cmd).decode("utf-8"))
 
 
 if __name__ == "__main__":

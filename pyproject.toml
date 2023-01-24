@@ -1,0 +1,65 @@
+# [build-system]
+# requires = ["setuptools", "wheel"]
+# build-backend = "setuptools.build_meta"
+
+[build-system]
+requires = ["hatchling", "hatch-fancy-pypi-readme"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pip-freezer"
+description = "For the organized, but lazy developer, meaning that you'll update a package, but you don't want to be bothered with updating the requirements file. Pip Freezer pins packages no matter which requirements file they live in and maintains your comments and line breaks."
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+  "colorama",
+]
+
+dynamic = ["version", "readme"]
+requires-python = ">=3.8"
+authors = [{ name = "Tim Santor", email = "tsantor@xstudios.com" }]
+
+[project.scripts]
+pipfreezer = "pipfreezer.pipfreezer:run"
+pipfreezer-upgrade = "pipfreezer.pipfreezer:upgrade"
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "pre-commit",
+    "flake8",
+    "pylint",
+    "wheel",
+    "build",
+    "pytest",
+    "wheel",
+    "coverage",
+    "pytest-cov",
+]
+
+[tool.setuptools.packages.find]
+# https://setuptools.pypa.io/en/latest/userguide/datafiles.html
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {attr = "pipfreezer.__version__"}
+readme = {file = ["README.md", "HISTORY.md"]}
+
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/markdown"
+fragments = [
+  { path = "README.md" },
+  { path = "HISTORY.md" },
+]
+
+[tool.hatch.version]
+path = "src/pipfreezer/__init__.py"

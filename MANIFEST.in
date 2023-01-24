@@ -3,6 +3,5 @@ include HISTORY.md
 include LICENSE
 include README.md
 
-recursive-include docs *.md mkdocs.yml
-
-# recursive-include pipfreezer/data/*
+include requirements.txt
+include requirements_*.txt
