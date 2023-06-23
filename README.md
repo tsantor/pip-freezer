@@ -20,7 +20,7 @@ Running `pipfreezer` will only pin packages defined in your requirements files.
 To install Pip Freezer, simply use pip:
 
 ```bash
-pip install pipfreezer
+pip install pip-freezer
 ```
 
 ## Usage
