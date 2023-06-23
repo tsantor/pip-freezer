@@ -12,8 +12,9 @@ endef
 export PRINT_HELP_PYSCRIPT
 
 help:
-	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
+	@python3 -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
+# -----------------------------------------------------------------------------
 
 python_version=3.9.11
 venv=pipfreezer_env
@@ -22,17 +23,21 @@ venv=pipfreezer_env
 # Environment setup
 # -----------------------------------------------------------------------------
 
-env:
+env:  ## create virtualenv
 	pyenv virtualenv ${python_version} ${venv} && pyenv local ${venv}
 
-reqs:
-	python -m pip install -U pip \
-		&& python -m pip install -r requirements.txt \
-		&& python -m pip install -r requirements_dev.txt
+reqs:  ## install development requirements
+	python3 -m pip install -U pip \
+		&& python3 -m pip install -r requirements.txt \
+		&& python3 -m pip install -r requirements_dev.txt \
+		&& python3 -m pip install -r requirements_test.txt
 
 destroy_env:  ## destroy pyenv virtualenv
 	pyenv uninstall ${venv}
 	rm -rf ~/.pyenv/versions/${python_version}/envs/${venv}
+
+dev: env reqs  ## create dev environment
+	python3 -m pip install -e .
 
 # -----------------------------------------------------------------------------
 # Cleanup
@@ -58,7 +63,7 @@ clean-pyc: ## remove Python file artifacts
 # -----------------------------------------------------------------------------
 
 dist: clean ## builds source and wheel package
-	python -m build --wheel
+	python3 -m build --wheel
 
 release_test: dist  ## upload package to pypi test
 	twine upload dist/* -r pypitest

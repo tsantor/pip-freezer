@@ -1,15 +1,14 @@
-# [build-system]
-# requires = ["setuptools", "wheel"]
-# build-backend = "setuptools.build_meta"
-
 [build-system]
-requires = ["hatchling", "hatch-fancy-pypi-readme"]
-build-backend = "hatchling.build"
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# [build-system]
+# requires = ["hatchling", "hatch-fancy-pypi-readme"]
+# build-backend = "hatchling.build"
 
 [project]
 name = "pip-freezer"
 description = "For the organized, but lazy developer, meaning that you'll update a package, but you don't want to be bothered with updating the requirements file. Pip Freezer pins packages no matter which requirements file they live in and maintains your comments and line breaks."
-
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -52,14 +51,14 @@ where = ["src"]
 
 [tool.setuptools.dynamic]
 version = {attr = "pipfreezer.__version__"}
-readme = {file = ["README.md", "HISTORY.md"]}
+readme = {file = ["README.md", "HISTORY.md"], content-type = "text/markdown"}
 
-[tool.hatch.metadata.hooks.fancy-pypi-readme]
-content-type = "text/markdown"
-fragments = [
-  { path = "README.md" },
-  { path = "HISTORY.md" },
-]
+# [tool.hatch.metadata.hooks.fancy-pypi-readme]
+# content-type = "text/markdown"
+# fragments = [
+#   { path = "README.md" },
+#   { path = "HISTORY.md" },
+# ]
 
-[tool.hatch.version]
-path = "src/pipfreezer/__init__.py"
+# [tool.hatch.version]
+# path = "src/pipfreezer/__init__.py"
