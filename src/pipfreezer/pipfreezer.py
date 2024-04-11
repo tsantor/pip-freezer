@@ -1,102 +1,49 @@
-import glob
 import json
 import logging
-import re
-import shlex
 import subprocess
+from pathlib import Path
 
-from colorama import Fore, Style, init
+from colorama import init
+
+from . import PackageData
+from .console import print_not_installed_packages
+from .console import print_updated_packages
 
 logger = logging.getLogger(__name__)
 
 init()
 
 # -----------------------------------------------------------------------------
+# Requirements Files
+# -----------------------------------------------------------------------------
 
 
-class PackageData:
-    """Data class so we can manipulate packages and versions easily."""
-
-    def __init__(self, package):
-        package = package.strip()
-        if matches := re.search(r"[==|~=|>=|<=]{2}", package, re.IGNORECASE):
-            pack_ver = package.split(matches[0])
-            self.name = pack_ver[0].lower()
-            # Get version and comment if any
-            ver_com = [x.strip() for x in pack_ver[1].split("#")]
-            self.version = ver_com.pop(0)
-            self.comment = "  # ".join(ver_com) if ver_com else None
-        else:
-            pack_com = [x.strip() for x in package.split("#")]
-            self.name = pack_com.pop(0).lower()
-            self.version = None
-            self.comment = "  # ".join(pack_com) if pack_com else None
-
-    def freeze(self):
-        if self.version:
-            return (
-                f"{self.name}=={self.version}  # {self.comment}"
-                if self.comment
-                else f"{self.name}=={self.version}"
-            )
-        return self.name
-
-    def __str__(self):
-        return f"PackageData(name='{self.name}', version='{self.version}', comment='{self.comment}')"
-
-    def __repr__(self):
-        return self.__str__()
-
-    def as_json(self):
-        return json.dumps(
-            {
-                "name": self.name,
-                "version": self.version,
-                "comment": self.comment,
-            }
-        )
+def find_requirements_files() -> list[Path]:
+    """Return a list of requirements files recursively."""
+    return list(Path().rglob("requirements*.txt"))
 
 
-def get_pip_list():
-    """Return a list of PackageData classes."""
-    data = subprocess.check_output(["pip", "list", "--format", "json"])
-    parsed_results = json.loads(data)
-    return [PackageData(f"{x['name']}=={x['version']}") for x in parsed_results]
-
-
-def get_pip_dict():
-    """
-    Return pip list as a dictoionary with package as key name and value
-    as version.
-    """
-    return {p.name: p.version for p in get_pip_list()}
-
-
-def find_requirements_files():
-    """Return a list of requirements files."""
-    files = glob.glob("**/requirements*.txt", recursive=True)
-    return files + glob.glob("requirements/*.txt", recursive=True)
-
-
-def open_requirements(file):
+def open_requirements(file) -> list[str]:
     """Return a clean list of requirements."""
-    with open(file) as fp:
+    with Path(file).open() as fp:
         return fp.readlines()
 
 
-def save_requirements(file, lines):
+def save_requirements(file, lines) -> None:
     "Save a list of requirements."
-    with open(file, "w") as fp:
+    with Path(file).open("w") as fp:
         fp.writelines(lines)
 
 
-def update_requirements_file(file, package_dict):
+def update_requirements_file(
+    file: str, package_dict: dict
+) -> tuple[list[str], list[str]]:
     """Open and update the requirements file."""
-    lines = open_requirements(file)
     replaced_content = ""
     updated = []
     not_installed = []
 
+    lines = open_requirements(file)
     # Go line by line and determine if a package needs to be updated
     for line in lines:
         # Simply re-add comments or empty lines
@@ -106,22 +53,80 @@ def update_requirements_file(file, package_dict):
 
         package = PackageData(line)
         if package.name in package_dict:
-            if package.version != package_dict[package.name]:
-                updated.append(
-                    f"{package.name} {package.version} => {package_dict[package.name]}"
-                )
-                package.version = package_dict[package.name]
+            pkg_version = package_dict[package.name]
+            if package.version != pkg_version:
+                updated.append(f"{package.name} {package.version} => {pkg_version}")
+                package.version = pkg_version
             replaced_content += package.freeze() + "\n"
         else:
             replaced_content += line
             not_installed.append(package.name)
-        save_requirements(file, replaced_content)
+
+    # Save the updated requirements file after all lines have been processed
+    save_requirements(file, replaced_content)
     return updated, not_installed
 
 
-def run():
+# -----------------------------------------------------------------------------
+# Call Subprocesses
+# -----------------------------------------------------------------------------
+
+
+def get_pip_list_as_json() -> str:
+    """Return a JSON string of installed packages."""
+    cmd = ["python3", "-m", "pip", "list", "--format", "json"]
+    proc = subprocess.run(cmd, capture_output=True, text=True, check=True)  # noqa: S603
+    return proc.stdout.strip()
+
+
+def get_pip_list_outdated_as_json() -> str:
+    """Return a JSON string of outdated packages."""
+    cmd = ["python3", "-m", "pip", "list", "--outdated", "--format", "json"]
+    proc = subprocess.run(cmd, capture_output=True, text=True, check=True)  # noqa: S603
+    return proc.stdout.strip()
+
+
+def upgrade_outdated_packages(to_install: str) -> str:
+    """Upgrade outdated packages."""
+    cmd = ["python3", "-m", "pip", "install", "--upgrade"] + to_install
+    proc = subprocess.run(cmd, capture_output=True, text=True, check=True)  # noqa: S603
+    return proc.stdout.strip()
+
+
+# -----------------------------------------------------------------------------
+
+
+def get_package_data_from_json_output(json_str: str) -> list[PackageData]:
+    """Return a list of PackageData classes based on pip list json output."""
+    packages = json.loads(json_str)
+    return [PackageData(f"{pkg['name']}=={pkg['version']}") for pkg in packages]
+
+
+def get_package_data_from_requirements() -> list[PackageData]:
+    """Return a list of PackageData classes."""
+    requirements = [
+        line.strip()
+        for f in find_requirements_files()
+        for line in open_requirements(f)
+        if not bool(line.startswith(("#", "\n", "-r")))
+    ]
+    return [PackageData(pkg) for pkg in requirements]
+
+
+def get_pip_dict(json_str: str) -> dict[str, str]:
+    """Return pip list as a dictionary with package as key name and value
+    as version."""
+    return {p.name: p.version for p in get_package_data_from_json_output(json_str)}
+
+
+# -----------------------------------------------------------------------------
+# Main Entry Points
+# -----------------------------------------------------------------------------
+
+
+def run() -> None:
     """Main program."""
-    package_dict = get_pip_dict()
+    package_dict = get_pip_dict(get_pip_list_as_json())
     requirements_files = find_requirements_files()
 
     updated = []
@@ -132,30 +137,26 @@ def run():
         not_installed += list2
 
     if updated:
-        print(
-            Fore.GREEN
-            + "\nThe following packages have updated pinned versions:"
-            + Fore.RESET
-        )
-        [print(Style.DIM + x + Style.RESET_ALL) for x in updated]
+        print_updated_packages(updated)
 
     if not_installed:
-        print(
-            Fore.YELLOW
-            + "\nThe following packages are referenced in requirements, but are not installed:"
-            + Fore.RESET
-        )
-        [print(Style.DIM + x + Style.RESET_ALL) for x in not_installed]
+        print_not_installed_packages(not_installed)
 
 
-def upgrade():
+def upgrade() -> None:
     """Upgrade outdated packages."""
-    data = subprocess.check_output(["pip", "list", "--outdated", "--format", "json"])
-    parsed_results = json.loads(data)
-    to_install = [f"{x['name']}=={x['latest_version']}" for x in parsed_results]
-    for x in to_install:
-        cmd = shlex.split(f"pip install {x}")
-        print(subprocess.check_output(cmd).decode("utf-8"))
+    reqs = get_package_data_from_requirements()
+    outdated_packages = json.loads(get_pip_list_outdated_as_json())
+
+    to_install = [
+        f"{pkg['name']}=={pkg['latest_version']}"
+        for pkg in outdated_packages
+        if any(pkg["name"] == req.name for req in reqs)
+    ]
+
+    if to_install:
+        output = upgrade_outdated_packages(to_install)
+        print(output)  # noqa: T201
 
 
 if __name__ == "__main__":

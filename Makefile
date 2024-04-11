@@ -1,3 +1,6 @@
+# -----------------------------------------------------------------------------
+# Generate help output when running just `make`
+# -----------------------------------------------------------------------------
 .DEFAULT_GOAL := help
 
 define PRINT_HELP_PYSCRIPT
@@ -15,58 +18,134 @@ help:
 	@python3 -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 # -----------------------------------------------------------------------------
+# Variables
+# -----------------------------------------------------------------------------
 
 python_version=3.9.11
-venv=pipfreezer_env
+venv=pip-freezer_env
+package_name=pip-freezer
+aws_profile=xstudios
+s3_bucket=xstudios-pypi
 
+# START - Generic commands
 # -----------------------------------------------------------------------------
-# Environment setup
+# Environment
 # -----------------------------------------------------------------------------
 
-env:  ## create virtualenv
+env:  ## Create virtual environment
 	pyenv virtualenv ${python_version} ${venv} && pyenv local ${venv}
 
-reqs:  ## install development requirements
-	python3 -m pip install -U pip \
-		&& python3 -m pip install -r requirements.txt \
-		&& python3 -m pip install -r requirements_dev.txt \
-		&& python3 -m pip install -r requirements_test.txt
+env_remove:  ## Remove virtual environment
+	pyenv uninstall -f ${venv}
 
-destroy_env:  ## destroy pyenv virtualenv
-	pyenv uninstall ${venv}
-	rm -rf ~/.pyenv/versions/${python_version}/envs/${venv}
+# -----------------------------------------------------------------------------
+# Pip
+# -----------------------------------------------------------------------------
 
-dev: env reqs  ## create dev environment
+pip_install:  ## Install requirements
+	python3 -m pip install --upgrade pip
+	@for file in $$(ls requirements/*.txt); do \
+			python3 -m pip install -r $$file; \
+	done
+	pre-commit install
+
+pip_install_editable:	## Install in editable mode
 	python3 -m pip install -e .
+
+pip_list:  ## Run pip list
+	python3 -m pip list
+
+pip_freeze:  ## Run pipfreezer
+	pipfreezer
+
+pip_checker:  ## Run pipchecker
+	python3 manage.py pipchecker
+
+# -----------------------------------------------------------------------------
+# Testing
+# -----------------------------------------------------------------------------
+
+pytest:  ## Run tests
+	pytest -vx
+
+pytest_verbose:  ## Run tests in verbose mode
+	pytest -vvs
+
+coverage:  ## Run tests with coverage
+	coverage run -m pytest && coverage html
+	# pytest --cov=django_project --cov=src --cov-report html -vs
+
+coverage_verbose:  ## Run tests with coverage in verbose mode
+	coverage run -m pytest -vs && coverage html
+
+coverage_skip:  ## Run tests with coverage and skip covered
+	coverage run -m pytest -vs && coverage html --skip-covered
+
+open_coverage:  ## Open coverage report
+	open htmlcov/index.html
 
 # -----------------------------------------------------------------------------
 # Cleanup
 # -----------------------------------------------------------------------------
 
-clean: clean-build clean-pyc ## remove all build, test, coverage and Python artifacts
+clean_build: ## Remove build artifacts
+	rm -fr build/ dist/ .eggs/
+	find . -name '*.egg-info' -o -name '*.egg' -exec rm -fr {} +
 
-clean-build: ## remove build artifacts
-	rm -fr build/
-	rm -fr dist/
-	rm -fr .eggs/
-	find . -name '*.egg-info' -exec rm -fr {} +
-	find . -name '*.egg' -exec rm -f {} +
+clean_pyc: ## Remove python file artifacts
+	find . \( -name '*.pyc' -o -name '*.pyo' -o -name '*~' -o -name '__pycache__' \) -exec rm -fr {} +
 
-clean-pyc: ## remove Python file artifacts
-	find . -name '*.pyc' -exec rm -f {} +
-	find . -name '*.pyo' -exec rm -f {} +
-	find . -name '*~' -exec rm -f {} +
-	find . -name '__pycache__' -exec rm -fr {} +
+clean: clean_build clean_pyc ## Remove all build and python artifacts
+
+clean_pytest_cache:  ## Clear pytest cache
+	rm -rf .pytest_cache
+
+clean_ruff_cache:  ## Clear ruff cache
+	rm -rf .ruff_cache
+
+clean_tox_cache:  ## Clear tox cache
+	rm -rf .tox
+
+clean_coverage:  ## Clear coverage cache
+	rm .coverage
+	rm -rf htmlcov
+
+clean_tests: clean_pytest_cache clean_ruff_cache clean_tox_cache clean_coverage  ## Clear pytest, ruff, tox, and coverage caches
+
+# -----------------------------------------------------------------------------
+# Miscellaneous
+# -----------------------------------------------------------------------------
+
+tree:  ## Show directory tree
+	tree -I 'build|dist|htmlcov|node_modules|migrations|contrib|__pycache__|*.egg-info|staticfiles|media|django_project'
 
 # -----------------------------------------------------------------------------
 # Deploy
 # -----------------------------------------------------------------------------
 
-dist: clean ## builds source and wheel package
-	python3 -m build --wheel
+dist: clean ## Builds source and wheel package
+	python3 -m build
 
-release_test: dist  ## upload package to pypi test
+release_test: dist ## Upload package to pypi test
 	twine upload dist/* -r pypitest
 
-release: dist ## package and upload a release
+release: dist ## Package and upload a release
 	twine upload dist/*
+
+check: dist ## Twine check
+	twine check dist/*
+
+# -----------------------------------------------------------------------------
+# X Studios S3 PyPi
+# -----------------------------------------------------------------------------
+
+create_latest_copy:  dist
+	cp dist/*.whl dist/${package_name}-latest-py3-none-any.whl
+
+push_to_s3: create_latest_copy  ## push distro to S3 bucket
+	aws s3 sync --profile=${aws_profile} --acl public-read ./dist/ s3://${s3_bucket}/ \
+        --exclude "*" --include "*.whl"
+	echo "https://${s3_bucket}.s3.amazonaws.com/${package_name}-latest-py3-none-any.whl"
+
+# -----------------------------------------------------------------------------
+# END - Generic commands
