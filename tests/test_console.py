@@ -25,7 +25,7 @@ def test_print_not_installed_packages(capfd):
     print_not_installed_packages(["requests==2.25.1", "flask==1.1.2"])
     captured = capfd.readouterr()
     expected_output = (
-        f"{Fore.YELLOW}The following packages are referenced in requirements, but are not installed:{Fore.RESET}\n"
+        f"{Fore.YELLOW}\nThe following packages are referenced in requirements, but are not installed:{Fore.RESET}\n"
         f"{Style.DIM}requests==2.25.1\nflask==1.1.2{Fore.RESET}\n"
     )
     assert captured.out == expected_output

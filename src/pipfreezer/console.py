@@ -17,7 +17,7 @@ def print_not_installed_packages(packages: list) -> None:
     """Print a list of packages that are not installed."""
     print_message(
         Fore.YELLOW,
-        "The following packages are referenced in requirements, "
+        "\nThe following packages are referenced in requirements, "
         "but are not installed:",
     )
     print_message(Style.DIM, "\n".join(packages))
