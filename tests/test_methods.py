@@ -13,6 +13,8 @@ from pipfreezer import open_requirements
 from pipfreezer import save_requirements
 from pipfreezer import update_requirements_file
 
+# from pipfreezer import run
+
 
 @pytest.fixture()
 def requirements_lines():

@@ -33,7 +33,11 @@ $ python3 -m pip install pip-freezer
 In the root of your project, run:
 
 ```bash
+# Freeze only packages defined in your requirements files.
 pipfreezer
+
+# Update only the packages defined in your requirements files.
+pipfreezer-upgrade
 ```
 
 > NOTE: `pipfreezer` will **not** add or pin packages that you **have not already defined** in one of your requirements files. **This is intentional**.
