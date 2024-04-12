@@ -86,7 +86,7 @@ def get_pip_list_outdated_as_json() -> str:
     return proc.stdout.strip()
 
 
-def upgrade_outdated_packages(to_install: str) -> str:
+def upgrade_outdated_packages(to_install: str) -> str:  # pragma: no cover
     """Upgrade outdated packages."""
     cmd = ["python3", "-m", "pip", "install", "--upgrade"] + to_install
     proc = subprocess.run(cmd, capture_output=True, text=True, check=True)  # noqa: S603
@@ -124,7 +124,7 @@ def get_pip_dict(json_str: str) -> dict[str, str]:
 # -----------------------------------------------------------------------------
 
 
-def run() -> None:
+def run() -> None:  # pragma: no cover
     """Main program."""
     package_dict = get_pip_dict(get_pip_list_as_json())
     requirements_files = find_requirements_files()
@@ -143,7 +143,7 @@ def run() -> None:
         print_not_installed_packages(not_installed)
 
 
-def upgrade() -> None:
+def upgrade() -> None:  # pragma: no cover
     """Upgrade outdated packages."""
     reqs = get_package_data_from_requirements()
     outdated_packages = json.loads(get_pip_list_outdated_as_json())

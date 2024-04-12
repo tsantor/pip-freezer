@@ -54,8 +54,8 @@ class PackageData:
     def __eq__(self, other):
         """Override the default Equals behavior"""
         if not isinstance(other, PackageData):
-            # don't attempt to compare against unrelated types
-            return NotImplemented
+            # Don't attempt to compare against unrelated types
+            return NotImplemented  # pragma: no cover
 
         # Compare the name and version (comment is ignored)
         return self.name == other.name and self.version == other.version

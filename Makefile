@@ -38,6 +38,8 @@ env:  ## Create virtual environment
 env_remove:  ## Remove virtual environment
 	pyenv uninstall -f ${venv}
 
+env_from_scratch: env_remove env pip_install pip_install_editable  ## Create environment from scratch
+
 # -----------------------------------------------------------------------------
 # Pip
 # -----------------------------------------------------------------------------
