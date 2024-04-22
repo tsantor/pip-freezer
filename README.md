@@ -34,13 +34,15 @@ In the root of your project, run:
 
 ```bash
 # Freeze only packages defined in your requirements files.
-pipfreezer
+pipfreezer freeze
 
 # Update only the packages defined in your requirements files.
-pipfreezer-upgrade
+pipfreezer upgrade
 ```
 
-> NOTE: `pipfreezer` will **not** add or pin packages that you **have not already defined** in one of your requirements files. **This is intentional**.
+> **NOTE:** For help run `pipfreezer --help` or for a specific command run `pipfreezer {command} --help`.
+
+> **NOTE:** `pipfreezer` will **not** add or pin packages that you **have not already defined** in one of your requirements files. **This is intentional**.
 
 ## Development
 

@@ -94,10 +94,10 @@ open_coverage:  ## Open coverage report
 # -----------------------------------------------------------------------------
 
 ruff_format: ## Run ruff format
-	ruff format src/env_wrangler
+	ruff format src/
 
 ruff_check: ## Run ruff check
-	ruff check src/env_wrangler
+	ruff check src/
 
 ruff_clean: ## Run ruff clean
 	ruff clean
