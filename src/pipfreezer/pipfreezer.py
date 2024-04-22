@@ -3,13 +3,9 @@ import logging
 import subprocess
 from pathlib import Path
 
-from colorama import init
-
 from . import PackageData
 
 logger = logging.getLogger(__name__)
-
-init()
 
 # -----------------------------------------------------------------------------
 # Requirements Files

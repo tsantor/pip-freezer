@@ -1,6 +1,3 @@
-from .console import print_message  # noqa: F401
-from .console import print_not_installed_packages  # noqa: F401
-from .console import print_updated_packages  # noqa: F401
 from .package_data import PackageData  # noqa: F401
 from .pipfreezer import find_requirements_files  # noqa: F401
 from .pipfreezer import get_package_data_from_json_output  # noqa: F401

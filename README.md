@@ -1,8 +1,6 @@
 # Pip Freezer
 
-![Coverage](https://img.shields.io/badge/coverage-97%25-brightgreen)
-
-<!-- ![Code Style](https://img.shields.io/badge/code_style-ruff-black) -->
+![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen)
 
 ## Overview
 

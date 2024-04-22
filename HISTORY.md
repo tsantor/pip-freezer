@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This projec
 ## 0.3.7
 
 - Moved from `argparse` to `click`.
+- Removed `colorama`
 
 ## 0.3.6 (2024-04-11)
 

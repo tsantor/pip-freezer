@@ -3,8 +3,6 @@ import logging
 
 import click  # https://click.palletsprojects.com/
 
-from .console import print_not_installed_packages
-from .console import print_updated_packages
 from .pipfreezer import find_requirements_files
 from .pipfreezer import get_package_data_from_requirements
 from .pipfreezer import get_pip_dict
@@ -51,10 +49,20 @@ def freeze(verbose) -> None:  # pragma: no cover
         not_installed += list2
 
     if updated:
-        print_updated_packages(updated)
+        click.secho("The following packages have updated pinned versions:", fg="green")
+        click.secho("\n".join(updated), dim=True)
+    else:
+        click.secho("No packages needed to be pinned.", fg="green")
 
     if not_installed:
-        print_not_installed_packages(not_installed)
+        click.secho(
+            (
+                "\nThe following packages are referenced in requirements, "
+                "but are not installed and will not be pinned:"
+            ),
+            fg="yellow",
+        )
+        click.secho("\n".join(not_installed), dim=True)
 
 
 @click.command()
@@ -76,12 +84,14 @@ def upgrade(verbose) -> None:  # pragma: no cover
 
     if to_install:
         output = upgrade_outdated_packages(to_install)
-        print(output)  # noqa: T201
+        click.echo(output)
+    else:
+        click.secho("No packages to upgrade.", fg="green")
 
 
 # Set up your command-line interface grouping
 @click.group()
-@click.version_option()
+@click.version_option(package_name="pip-freezer")
 def cli():
     """Pip Freezer pins packages no matter which requirements file they live
     in and maintains your comments and line breaks."""

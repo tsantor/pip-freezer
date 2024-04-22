@@ -4,7 +4,4 @@ build==1.2.1
 pre-commit==3.7.0
 
 # X Studios
-pip-freezer==0.3.6
-
-# Package specific
-colorama==0.4.6
+pip-freezer==0.3.7
