@@ -1,8 +1,8 @@
 from colorama import Fore
 from colorama import Style
-from pipfreezer import print_message
-from pipfreezer import print_not_installed_packages
-from pipfreezer import print_updated_packages
+from pipfreezer.console import print_message
+from pipfreezer.console import print_not_installed_packages
+from pipfreezer.console import print_updated_packages
 
 
 def test_print_message(capfd):

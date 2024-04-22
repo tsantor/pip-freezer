@@ -6,8 +6,6 @@ from pathlib import Path
 from colorama import init
 
 from . import PackageData
-from .console import print_not_installed_packages
-from .console import print_updated_packages
 
 logger = logging.getLogger(__name__)
 
@@ -117,47 +115,3 @@ def get_pip_dict(json_str: str) -> dict[str, str]:
     """Return pip list as a dictionary with package as key name and value
     as version."""
     return {p.name: p.version for p in get_package_data_from_json_output(json_str)}
-
-
-# -----------------------------------------------------------------------------
-# Main Entry Points
-# -----------------------------------------------------------------------------
-
-
-def run() -> None:  # pragma: no cover
-    """Main program."""
-    package_dict = get_pip_dict(get_pip_list_as_json())
-    requirements_files = find_requirements_files()
-
-    updated = []
-    not_installed = []
-    for file in requirements_files:
-        list1, list2 = update_requirements_file(file, package_dict)
-        updated += list1
-        not_installed += list2
-
-    if updated:
-        print_updated_packages(updated)
-
-    if not_installed:
-        print_not_installed_packages(not_installed)
-
-
-def upgrade() -> None:  # pragma: no cover
-    """Upgrade outdated packages."""
-    reqs = get_package_data_from_requirements()
-    outdated_packages = json.loads(get_pip_list_outdated_as_json())
-
-    to_install = [
-        f"{pkg['name']}=={pkg['latest_version']}"
-        for pkg in outdated_packages
-        if any(pkg["name"] == req.name for req in reqs)
-    ]
-
-    if to_install:
-        output = upgrade_outdated_packages(to_install)
-        print(output)  # noqa: T201
-
-
-if __name__ == "__main__":
-    run()

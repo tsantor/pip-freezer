@@ -17,6 +17,7 @@ classifiers = [
 ]
 dependencies = [
   "colorama",
+  "click",
 ]
 
 dynamic = ["version", "readme"]
@@ -24,8 +25,7 @@ requires-python = ">=3.8"
 authors = [{ name = "Tim Santor", email = "tsantor@xstudios.com" }]
 
 [project.scripts]
-pipfreezer = "pipfreezer.pipfreezer:run"
-pipfreezer-upgrade = "pipfreezer.pipfreezer:upgrade"
+pipfreezer = "pipfreezer.cli:cli"
 
 [project.urls]
 # Homepage = "https://example.com"
@@ -64,7 +64,7 @@ omit = ["*/migrations/*", "*/tests/*"]
 [tool.coverage.report]
 exclude_also = [
   "def __repr__",
-  "def __str__",
+  # "def __str__",
 ]
 
 # ==== mypy ====
