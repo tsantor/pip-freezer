@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 0.3.7
+## 0.3.7 (2024-04-22)
 
 - Moved from `argparse` to `click`.
 - Removed `colorama`
