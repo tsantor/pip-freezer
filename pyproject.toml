@@ -25,6 +25,7 @@ authors = [{ name = "Tim Santor", email = "tsantor@xstudios.com" }]
 
 [project.scripts]
 pipfreezer = "pipfreezer.cli:cli"
+pip-freezer = "pipfreezer.cli:cli"
 
 [project.urls]
 # Homepage = "https://example.com"
