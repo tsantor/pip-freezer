@@ -14,7 +14,9 @@ logger = logging.getLogger(__name__)
 
 def find_requirements_files() -> list[Path]:
     """Return a list of requirements files recursively."""
-    return list(Path().rglob("requirements*.txt"))
+    return list(Path().rglob("requirements/*.txt")) + list(
+        Path().rglob("requirements*.txt")
+    )
 
 
 def open_requirements(file) -> list[str]:
